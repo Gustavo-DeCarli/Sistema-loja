@@ -11,6 +11,7 @@
     <script src="script.js" type="text/javascript"></script>
     <link href="style.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" type="text/css" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="images/nav.png">
     <title>Agro Imperial</title>
 </head>
 
