@@ -6,7 +6,7 @@ class DB {
     static function getInstance () {
         if (DB::$conn) return DB::$conn;
 
-        DB::$conn = new PDO("mysql:host=localhost;dbname=db", "root", "");
+        DB::$conn = new PDO("mysql:host=localhost;dbname=loja", "root", "");
 
         return DB::$conn;
     }

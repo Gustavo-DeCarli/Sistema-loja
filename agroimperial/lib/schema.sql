@@ -1,4 +1,4 @@
-CREATE loja;
+CREATE DATABASE loja;
 
 USE loja;
 

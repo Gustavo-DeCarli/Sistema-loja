@@ -334,3 +334,23 @@ body{
     position: absolute;
     font-size: 15px;
 }
+
+/* Produtos */
+
+.botao{
+    background-color: #212121;
+    color: white;
+}
+
+.botao:hover{
+    color: #679459;
+}
+
+.buscar{
+    background-color: #212121;
+    color: white;
+}
+
+.buscar:hover{
+    color: #679459;
+}
