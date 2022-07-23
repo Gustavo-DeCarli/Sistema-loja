@@ -26,4 +26,10 @@ $('.login-reg-panel input[type="radio"]').on('change', function() {
     }
 });
 
-// Entrada JS
+// PRODUTOS E CATEGORIAS JS
+
+
+
+
+
+

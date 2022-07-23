@@ -1,3 +1,28 @@
+<?php
+session_start();
+require 'lib/conn.php';
+$connection = DB::getInstance();
+if (isset($_POST['login'])) {
+  $user = $_POST['user'];
+  $pass = $_POST['pass'];
+  $query = $connection->prepare("SELECT * FROM login WHERE user=:user");
+  $query->bindParam(":user", $user, PDO::PARAM_STR);
+  $query->execute();
+  $result = $query->fetch(PDO::FETCH_ASSOC);
+  if (!$result) {
+    echo '<p class="alert alert-warning text-center error">Usuário Inválido!</p>';
+  } else {
+    if ($pass == $result['pass']) {
+      $_SESSION['user_id'] = $result['id'];
+      header('Location: painel.php');
+      echo '<html> </html>';
+    } else {
+      echo '<p class="alert alert-warning text-center error">Senha ou usuário incorreto!</p>';
+    }
+  }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="PT-br">
 
@@ -21,11 +46,11 @@
 
             <div class="white-panel">
                 <div class="login-show mt-5">
-                    <form action="lib/verif.php" method="POST">
+                    <form action="index.php" method="POST">
                     <h2>Login</h2>
-                    <input type="text" placeholder="Usuário">
-                    <input type="password" placeholder="Senha">
-                    <input class='login' type="button" value="Entrar">
+                    <input type="text" name='user' id="user" placeholder="Usuário">
+                    <input type="password" name='pass' id="pass" placeholder="Senha">
+                    <input class='login' name='login' id="login" type="submit" value="Entrar">
                     </form>
                 </div>
             </div>

@@ -35,28 +35,30 @@ if (!isset($_SESSION['user_id'])) {
 
 
             <nav class="navbar bg-light border rounded">
-                <form action="categorias.php" method='POST' class="container-fluid justify-content-start">
+                <form action="vendas.php" method='POST' class="container-fluid justify-content-start">
                     <div class="col-auto">
                         <button id="novo" type="button" class="botao btn " data-bs-toggle="modal" data-bs-target="#exampleModal2">
-                            Adicionar Produto 
+                            Adicionar Venda 
                         </button>
                     </div>
                     <div class="ms-5 col-auto">
-                        <input class="form-control" id='busca' name="busca" type="text" placeholder="Buscar por nome">
+                        <input class="form-control" name="buscanfe" type="text" placeholder="Buscar por nota fiscal">
                     </div>
                     <div class="ms-2 col-auto">
-                        <input class="buscar btn" name='buscar2' type="submit" value='Buscar'>
+                        <input class="buscar btn" name='buscar1' type="submit" value='Buscar'>
                     </div>
                     <div class="ms-2 col-auto">
-                        <button class="buscar btn" name='limpa' type="button" value='Buscar'><a class='buscar' href='categorias.php'>Limpar Busca</a></button>
+                        <button class="buscar btn" name='limpa' type="button" value='Buscar'><a class='buscar' href='vendas.php'>Limpar Busca</a></button>
                     </div>
                 </form>
             </nav>
             <table class="table align-middle">
                 <thead>
-                    <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">Categoria</th>
+                    <tr class='text-center'>
+                        <th scope="col">Nº NFE</th>
+                        <th scope="col">Quantidade de Itens</th>
+                        <th scope="col">Valor Total</th>
+                        <th scope="col">Data da Venda</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -72,24 +74,26 @@ if (!isset($_SESSION['user_id'])) {
                     $inicio = $pc - 1;
                     $inicio = $inicio * $total_reg;
                     $connection = DB::getInstance();
-                    if (isset($_POST['busca'])) {
-                    $b1 = $_POST['busca'];
-                    if($_POST['busca'] == ''){
-                        $stmt = $connection->query("SELECT * FROM categorias LIMIT $inicio,$total_reg");
+                    if(isset($_POST['buscanfe'])){
+                        $busca = $_POST['buscanfe'];
+                        if($busca != ''){
+                        $stmt = $connection->query("SELECT * FROM vendas WHERE notafisc='$busca' LIMIT $inicio,$total_reg");
+                        }elseif($busca == ''){
+                        $stmt = $connection->query("SELECT * FROM vendas LIMIT $inicio,$total_reg");  
+                        }
                     }else{
-                        $stmt = $connection->query("SELECT * FROM categorias WHERE nome='$b1' LIMIT $inicio,$total_reg");
-                    }
-                    }else{
-                    $stmt = $connection->query("SELECT * FROM categorias LIMIT $inicio,$total_reg");
+                    $stmt = $connection->query("SELECT * FROM vendas LIMIT $inicio,$total_reg");
                     }
                     $stmt->setFetchMode(PDO::FETCH_ASSOC);
-                    $dados11 = $stmt->fetchAll();
-                    foreach ($dados11 as $cat) {
+                    $dados111 = $stmt->fetchAll();
+                    foreach ($dados111 as $ven) {
                     ?>
-                        <tr>
-                            <td><?php echo $cat['id'] ?></td>
-                            <td><?php echo $cat['nome'] ?></td>
-                            <td><form action='lib/delcat.php' method='POST'><button id='idcat' name='idcat' class="btn btn-danger p-1" type='submit' value="<?php echo $cat['id']?>">Deletar</button></form></td>
+                        <tr class='text-center'>
+                            <td><?php echo $ven['notafisc'] ?></td>
+                            <td><?php echo $ven['quantidade'] ?></td>
+                            <td>R$<?php echo $ven['valort'] ?></td>
+                            <td><?php echo $ven['data'] ?></td>
+                            <td><form action='lib/delvenda.php' method="POST"><button class="btn btn-danger p-1" id='delven' name='delven' type='submit' value="<?php echo $ven['id']?>">Deletar</button></form></td>
                         </tr>
                     <?php } ?>
                 </tbody>
@@ -121,14 +125,22 @@ if (!isset($_SESSION['user_id'])) {
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Nova Categoria</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Venda Item</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <input type="hidden" id="id"/>
           <div class="mb-3">
-            <label for="cod" class="form-label">Nome da Categoria</label>
-            <input type="text" class="form-control" id="nomecat" placeholder="Nome da Categoria">
+            <label for="codprod" class="form-label">Código do produto</label>
+            <input type="number" class="form-control" id="codprod" placeholder="Código do produto">
+          </div>
+          <div class="mb-3">
+            <label for="nfe" class="form-label">Nota-fiscal</label>
+            <input type="text" class="form-control" id="nfe" placeholder="Nota-fiscal do produto">
+          </div>
+          <div class="mb-3">
+            <label for="quantidade" class="form-label">Quantidade</label>
+            <input type="number" class="form-control" id="quantidade" placeholder="Quantidade do produto">
           </div>
         </div>
         <div class="modal-footer">
@@ -146,17 +158,21 @@ if (!isset($_SESSION['user_id'])) {
     btnSalvar2 = document.getElementById("salvar2")
     btnSalvar2.addEventListener("click", async () => {
 
-        const nomecat = document.getElementById("nomecat").value
+        const codprod = document.getElementById("codprod").value
+        const nfe = document.getElementById("nfe").value
+        const quantidade = document.getElementById("quantidade").value
 
         const body = new FormData()
-        body.append('nomecat', nomecat)
+        body.append('codprod', codprod)
+        body.append('nfe', nfe)
+        body.append('quantidade', quantidade)
 
-        const response = await fetch(`${baseUrl}addcat.php`, {
+        const response = await fetch(`${baseUrl}addvenda.php`, {
             method: "POST",
             body
         })
         modal2.hide();
-        window.location.href = "categorias.php"
+        window.location.href = "vendas.php"
     })}
   </script>
 </body>

@@ -1,3 +1,13 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+  echo '<script type="text/javascript">';
+  echo 'alert("Login necessário");';
+  echo 'window.location.href = "index.php";';
+  echo '</script>';
+  exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="PT-br">
 
@@ -25,23 +35,29 @@
 
 
             <nav class="navbar bg-light border rounded">
-                <form action="admin.php" method='POST' class="container-fluid justify-content-start">
+                <form action="produtos.php" method='POST' class="container-fluid justify-content-start">
                     <div class="col-auto">
-                        <button id="novo" type="button" class="botao btn " data-bs-toggle="modal" data-bs-target="#exampleModal3">
-                            Novo cardápio
+                        <button id="novo" type="button" class="botao btn " data-bs-toggle="modal" data-bs-target="#exampleModal1">
+                            Adicionar Produto
                         </button>
+                    </div>
+                    <div class="ms-5 col-auto">
+                        <input class="form-control" name="buscacod" type="text" placeholder="Buscar por código">
+                    </div>
+                    <div class="ms-2 col-auto">
+                        <input class="buscar btn" name='buscar1' type="submit" value='Buscar'>
                     </div>
                     <div class="ms-5 col-auto">
                         <input class="form-control" name="busca" type="text" placeholder="Buscar por nome">
                     </div>
                     <div class="ms-2 col-auto">
-                        <input class="buscar btn" name='buscar' type="submit" value='Buscar'>
+                        <input class="buscar btn" name='buscar2' type="submit" value='Buscar'>
                     </div>
                 </form>
             </nav>
             <table class="table align-middle">
                 <thead>
-                    <tr>
+                    <tr class='text-center'>
                         <th scope="col">Código</th>
                         <th scope="col">Produto</th>
                         <th scope="col">Categoria</th>
@@ -50,53 +66,152 @@
                     </tr>
                 </thead>
                 <tbody>
-                <?php
-                require "lib/conn.php";
-                if (isset($_GET['pagina'])) {
-                  $pagina = $_GET['pagina'];
-                  $pc = $pagina;
-                } else {
-                  $pc = 1;
-                }
-                $total_reg = "10";
-                $inicio = $pc - 1;
-                $inicio = $inicio * $total_reg;
-                $connection = DB::getInstance();
-                $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nome as cat from produtos, categorias where categorias.id=produtos.cat LIMIT $inicio,$total_reg");
-                $stmt->setFetchMode(PDO::FETCH_ASSOC);
-                $dados11 = $stmt->fetchAll();
-                foreach ($dados11 as $loja) {
-                ?>
-                    <tr>
-                        <td><?php echo $loja['cod']?></td>
-                        <td><?php echo $loja['nome']?></td>
-                        <td><?php echo $loja['cat']?></td>
-                        <td><?php echo $loja['estoque']?></td>
-                        <td>R$<?php echo $loja['valor']?></td>
-                        <td><input class="btn btn-danger p-1" type='submit' value="Deletar"></td>
-                    </tr>
-                    <?php }?>
+                    <?php
+                    if (isset($_GET['pagina'])) {
+                        $pagina = $_GET['pagina'];
+                        $pc = $pagina;
+                    } else {
+                        $pc = 1;
+                    }
+                    $total_reg = "10";
+                    $inicio = $pc - 1;
+                    $inicio = $inicio * $total_reg;
+                    require "lib/conn.php";
+                        $connection = DB::getInstance();
+                        if (isset($_POST['buscacod']) or isset($_POST['busca'])) {
+                            $b1 = $_POST['buscacod'];
+                            $b2 = $_POST['busca'];
+                            if ($b1 != '') {
+                                $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nome as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.cod=$b1 ORDER BY produtos.id DESC LIMIT $inicio,$total_reg");
+                            } elseif ($b2 != '') {
+                                $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nome as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.nome='$b2' ORDER BY produtos.id DESC LIMIT $inicio,$total_reg");
+                            } elseif($b2 == '' & $b1 == ''){
+                                $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nome as cat from produtos, categorias where categorias.id=produtos.cat ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
+                            }
+                        } else {
+                            $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nome as cat from produtos, categorias where categorias.id=produtos.cat ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
+                        }
+                    $stmt->setFetchMode(PDO::FETCH_ASSOC);
+                    $dados11 = $stmt->fetchAll();
+                    foreach ($dados11 as $loja) {
+                    ?>
+                        <tr class='text-center'>
+                            <td><?php echo $loja['cod'] ?></td>
+                            <td><?php echo $loja['nome'] ?></td>
+                            <td><?php echo $loja['cat'] ?></td>
+                            <td><?php echo $loja['estoque'] ?></td>
+                            <td>R$<?php echo $loja['valor'] ?></td>
+                            <td>
+                                <form action='lib/delprod.php' method='POST'><button class="btn btn-danger p-1" name="idprod" id="idprod" type='submit' value="<?php echo $loja['cod'] ?>">Deletar</button></form>
+                            </td>
+                        </tr>
+                    <?php } ?>
                 </tbody>
                 <tfoot>
-        <tr>
-          <?php
-            $tr = $stmt->rowCount();
-            $tp = $tr / $total_reg;
-            $anterior = $pc - 1;
-            $proximo = $pc + 1;
-            if ($pc > 1) {
-              echo "<td colspan='9'><a class='btn btn-success' href='?pagina=$anterior'>Anterior</a></td>";
-            }
-            if ($pc < $tr) {
-              echo "<td colspan='9'><a class='btn btn-success' href='?pagina=$proximo'>Próxima</a></td>";
-            }
-            ?>
-            <tr>
-        </tfoot>
+                    <tr>
+                        <?php
+                        $tr = $stmt->rowCount();
+                        $tp = $tr / $total_reg;
+                        $anterior = $pc - 1;
+                        $proximo = $pc + 1;
+                        if ($pc > 1) {
+                            echo "<td class='fot' ></td>";
+                            echo "<td class='fot' ></td>";
+                            echo "<td class='fot' ><a class='btn btn-success' href='?pagina=$anterior'>Anterior</a></td>";
+                        }
+                        if ($pc < $tr) {
+                            echo "<td class='fot' ><a class='btn btn-success' href='?pagina=$proximo'>Próxima</a></td>";
+                        }
+                        ?>
+                    <tr>
+                </tfoot>
             </table>
         </div>
 
     </div>
+
+
+    <!-- MODAL NOVO PRODUTO -->
+    <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Novo Ingrediente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="id" />
+
+                    <div class="mb-3">
+                        <label for="cod" class="form-label">Código do Produto</label>
+                        <input type="text" class="form-control" id="cod" placeholder="Código do Produto">
+                    </div>
+                    <div class="mb-3">
+                        <label for="nomeprod" class="form-label">Nome do Produto</label>
+                        <input type="text" class="form-control" id="nomeprod" placeholder="Nome do Produto">
+                    </div>
+                    <div class="mb-3">
+                        <label for="catprod" class="form-label">Categoria</label>
+                        <select class="form-control" name="catprod" id="catprod">
+                            <option value=''>Selecione uma categoria</option>
+                            <?php
+                            $connection = DB::getInstance();
+                            $stmt2 = $connection->query("SELECT * FROM categorias");
+                            $dadoscat = $stmt2->fetchAll();
+                            foreach ($dadoscat as $cat2) {
+                                $select = "<option value='{$cat2['id']}'>{$cat2['nome']}</option>";
+                                echo $select;
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="estoque" class="form-label">Quantidade em Estoque</label>
+                        <input type="number" class="form-control" id="estoque" placeholder="Quantidade em Estoque">
+                    </div>
+                    <div class="mb-3">
+                        <label for="valorprod" class="form-label">Valor do Produto</label>
+                        <input type="number" step=0.01 class="form-control" id="valorprod" placeholder="Valor do Produto">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                    <button id="salvar1" type="button" class="btn btn-success">Salvar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const baseUrl = `//192.168.0.29/lib/`
+        onload = async () => {
+            modal1 = new bootstrap.Modal(document.getElementById('exampleModal1'))
+            btnSalvar1 = document.getElementById("salvar1")
+            btnSalvar1.addEventListener("click", async () => {
+
+                const cod = document.getElementById("cod").value
+                const nomeprod = document.getElementById("nomeprod").value
+                const catprod = document.getElementById("catprod").value
+                const estoque = document.getElementById("estoque").value
+                const valorprod = document.getElementById("valorprod").value
+
+                const body = new FormData()
+                body.append('cod', cod)
+                body.append('nomeprod', nomeprod)
+                body.append('catprod', catprod)
+                body.append('estoque', estoque)
+                body.append('valorprod', valorprod)
+
+                const response = await fetch(`${baseUrl}addprod.php`, {
+                    method: "POST",
+                    body
+                })
+                modal1.hide();
+                window.location.href = "produtos.php"
+            })
+        }
+    </script>
 </body>
 
 </html>
