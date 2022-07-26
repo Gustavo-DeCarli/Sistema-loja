@@ -9,6 +9,7 @@ class Produtos
     private $cod = "";
     private $cat = "";
     private $valor = "";
+    private $codid = "";
 
     function __toString(){
         return json_encode([
@@ -17,7 +18,8 @@ class Produtos
             "estoque" => $this->estoque,
             "cod" => $this->cod,
             "cat" => $this->cat,
-            "valor" => $this->valor
+            "valor" => $this->valor,
+            "codid" => $this->codid
         ]);
     }
 
@@ -27,6 +29,7 @@ class Produtos
     function setcod($v){$this->cod = $v;}
     function setcat($v){$this->cat = $v;}
     function setvalor($v){$this->valor = $v;}
+    function setcodid($v){$this->codid = $v;}
 
     function inserir()
     {
@@ -57,6 +60,30 @@ class Produtos
         $consulta = $connection->prepare("DELETE FROM produtos WHERE cod = :cod");
         $consulta->execute([':cod' => $this->cod]);
     }
+
+    function update()
+    {
+        $connection = DB::getInstance();
+        try{
+            $consulta = $connection->prepare("START TRANSACTION;");
+            $consulta->execute();
+            $consulta = $connection->prepare("UPDATE produtos SET nome=:nome, estoque=:estoque, cod=:cod, cat=:cat, valor=:valor WHERE cod = :codid");
+            $consulta->execute([
+                ':nome' => $this->nome,
+                ':estoque' => $this->estoque,
+                ':cod' => $this->cod,
+                ':cat' => $this->cat,
+                ':valor' => $this->valor,
+                ':codid' => $this->codid
+            ]);
+            $consulta = $connection->prepare("COMMIT;");
+            $consulta->execute();
+        }catch(Exception $e){
+            $consulta = $connection->prepare("ROLLBACK;");
+            $consulta->execute();
+            die($e->getMessage());
+        }
+}
 }
 
 class Categorias
@@ -80,7 +107,7 @@ class Categorias
         try{
             $consulta = $connection->prepare("START TRANSACTION;");
             $consulta->execute();
-            $consulta = $connection->prepare("INSERT INTO categorias(nome) VALUES (:nome)");
+            $consulta = $connection->prepare("INSERT INTO categorias(nomec) VALUES (:nome)");
             $consulta->execute([
                 ':nome' => $this->nome
             ]);

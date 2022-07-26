@@ -88,7 +88,7 @@ if (!isset($_SESSION['user_id'])) {
                     ?>
                         <tr>
                             <td><?php echo $cat['id'] ?></td>
-                            <td><?php echo $cat['nome'] ?></td>
+                            <td><?php echo $cat['nomec'] ?></td>
                             <td><form action='lib/delcat.php' method='POST'><button id='idcat' name='idcat' class="btn btn-danger p-1" type='submit' value="<?php echo $cat['id']?>">Deletar</button></form></td>
                         </tr>
                     <?php } ?>

@@ -82,14 +82,14 @@ if (!isset($_SESSION['user_id'])) {
                             $b1 = $_POST['buscacod'];
                             $b2 = $_POST['busca'];
                             if ($b1 != '') {
-                                $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nome as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.cod=$b1 ORDER BY produtos.id DESC LIMIT $inicio,$total_reg");
+                                $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.cod=$b1 ORDER BY produtos.id DESC LIMIT $inicio,$total_reg");
                             } elseif ($b2 != '') {
-                                $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nome as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.nome='$b2' ORDER BY produtos.id DESC LIMIT $inicio,$total_reg");
+                                $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.nome='$b2' ORDER BY produtos.id DESC LIMIT $inicio,$total_reg");
                             } elseif($b2 == '' & $b1 == ''){
-                                $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nome as cat from produtos, categorias where categorias.id=produtos.cat ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
+                                $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
                             }
                         } else {
-                            $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nome as cat from produtos, categorias where categorias.id=produtos.cat ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
+                            $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
                         }
                     $stmt->setFetchMode(PDO::FETCH_ASSOC);
                     $dados11 = $stmt->fetchAll();
@@ -101,6 +101,9 @@ if (!isset($_SESSION['user_id'])) {
                             <td><?php echo $loja['cat'] ?></td>
                             <td><?php echo $loja['estoque'] ?></td>
                             <td>R$<?php echo $loja['valor'] ?></td>
+                            <td>
+                                <form action='edita.php' method='POST'><button class="btn btn-danger p-1" name="edit" id="edit" type='submit' value="<?php echo $loja['cod'] ?>">Editar</button></form>
+                            </td>
                             <td>
                                 <form action='lib/delprod.php' method='POST'><button class="btn btn-danger p-1" name="idprod" id="idprod" type='submit' value="<?php echo $loja['cod'] ?>">Deletar</button></form>
                             </td>
@@ -136,7 +139,7 @@ if (!isset($_SESSION['user_id'])) {
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Novo Ingrediente</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Novo Produto</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">

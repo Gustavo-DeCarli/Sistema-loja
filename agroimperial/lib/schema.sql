@@ -13,13 +13,13 @@ CREATE TABLE produtos(
 
 CREATE TABLE categorias(
     id INT NOT NULL AUTO_INCREMENT,
-    nome VARCHAR(400) NOT NULL,
+    nomec VARCHAR(400) NOT NULL,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE vendas(
     id INT NOT NULL AUTO_INCREMENT,
-    idprod INT NOT NULL,
+    codprod INT NOT NULL,
     notafisc VARCHAR(200) NOT NULL,
     quantidade INT NOT NULL,
     valort FLOAT NOT NULL,
