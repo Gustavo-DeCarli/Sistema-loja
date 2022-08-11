@@ -1,11 +1,11 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
-  echo '<script type="text/javascript">';
-  echo 'alert("Login necessário");';
-  echo 'window.location.href = "index.php";';
-  echo '</script>';
-  exit;
+    echo '<script type="text/javascript">';
+    echo 'alert("Login necessário");';
+    echo 'window.location.href = "index.php";';
+    echo '</script>';
+    exit;
 }
 ?>
 <!DOCTYPE html>
@@ -41,17 +41,35 @@ if (!isset($_SESSION['user_id'])) {
                             Adicionar Produto
                         </button>
                     </div>
-                    <div class="ms-5 col-auto">
-                        <input class="form-control" name="buscacod" type="text" placeholder="Buscar por código">
+                    <div class="ms-2 col-auto">
+                        <input style="width:150px;" class="form-control" name="buscacod" type="text" placeholder="Buscar código">
                     </div>
                     <div class="ms-2 col-auto">
                         <input class="buscar btn" name='buscar1' type="submit" value='Buscar'>
                     </div>
-                    <div class="ms-5 col-auto">
-                        <input class="form-control" name="busca" type="text" placeholder="Buscar por nome">
+                    <div class="ms-2 col-auto">
+                        <input style="width:150px;" class="form-control" name="busca" type="text" placeholder="Buscar nome">
                     </div>
                     <div class="ms-2 col-auto">
                         <input class="buscar btn" name='buscar2' type="submit" value='Buscar'>
+                    </div>
+                    <div class="ms-2 col-auto">
+                        <select style="width:150px;" class="form-select" name="buscacat">
+                            <option value="">Categoria</option>
+                            <?php 
+                            require 'lib/conn.php';
+                            $connection = DB::getInstance();
+                            $stmt = $connection->query("SELECT * from categorias");
+                            $stmt->setFetchMode(PDO::FETCH_ASSOC);
+                            $cat = $stmt->fetchAll();
+                            foreach ($cat as $cats) {
+                            ?>
+                            <option value="<?php echo $cats['id']?>"><?php echo $cats['nomec']?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                    <div class="ms-2 col-auto">
+                        <input class="buscar btn" name='buscar3' type="submit" value='Buscar'>
                     </div>
                 </form>
             </nav>
@@ -76,21 +94,23 @@ if (!isset($_SESSION['user_id'])) {
                     $total_reg = "10";
                     $inicio = $pc - 1;
                     $inicio = $inicio * $total_reg;
-                    require "lib/conn.php";
-                        $connection = DB::getInstance();
-                        if (isset($_POST['buscacod']) or isset($_POST['busca'])) {
-                            $b1 = $_POST['buscacod'];
-                            $b2 = $_POST['busca'];
-                            if ($b1 != '') {
-                                $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.cod=$b1 ORDER BY produtos.id DESC LIMIT $inicio,$total_reg");
-                            } elseif ($b2 != '') {
-                                $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.nome='$b2' ORDER BY produtos.id DESC LIMIT $inicio,$total_reg");
-                            } elseif($b2 == '' & $b1 == ''){
-                                $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
-                            }
-                        } else {
+                    $connection = DB::getInstance();
+                    if (isset($_POST['buscacod']) or isset($_POST['busca']) or isset($_POST['buscacat'])) {
+                        $b1 = $_POST['buscacod'];
+                        $b2 = $_POST['busca'];
+                        $b3 = $_POST['buscacat'];
+                        if ($b1 != '') {
+                            $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.cod=$b1 ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
+                        } elseif ($b2 != '') {
+                            $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.nome='$b2' ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
+                        }elseif($b3 !=''){
+                            $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.cat='$b3' ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
+                        } elseif ($b2 == '' & $b1 == '' & $b3=='') {
                             $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
                         }
+                    } else {
+                        $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
+                    }
                     $stmt->setFetchMode(PDO::FETCH_ASSOC);
                     $dados11 = $stmt->fetchAll();
                     foreach ($dados11 as $loja) {
@@ -162,7 +182,7 @@ if (!isset($_SESSION['user_id'])) {
                             $stmt2 = $connection->query("SELECT * FROM categorias");
                             $dadoscat = $stmt2->fetchAll();
                             foreach ($dadoscat as $cat2) {
-                                $select = "<option value='{$cat2['id']}'>{$cat2['nome']}</option>";
+                                $select = "<option value='{$cat2['id']}'>{$cat2['nomec']}</option>";
                                 echo $select;
                             }
                             ?>
