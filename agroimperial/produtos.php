@@ -102,7 +102,7 @@ if (!isset($_SESSION['user_id'])) {
                         if ($b1 != '') {
                             $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.cod=$b1 ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
                         } elseif ($b2 != '') {
-                            $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.nome='$b2' ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
+                            $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.nome LIKE '%$b2%' ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
                         }elseif($b3 !=''){
                             $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.cat='$b3' ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
                         } elseif ($b2 == '' & $b1 == '' & $b3=='') {

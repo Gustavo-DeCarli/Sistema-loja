@@ -78,6 +78,7 @@ class Produtos
             ]);
             $consulta = $connection->prepare("COMMIT;");
             $consulta->execute();
+            
         }catch(Exception $e){
             $consulta = $connection->prepare("ROLLBACK;");
             $consulta->execute();

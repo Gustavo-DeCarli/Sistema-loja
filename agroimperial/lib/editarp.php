@@ -1,6 +1,5 @@
 <?php
 require "funcoes.php";
-var_dump ($_POST);
 try {
     $s = new Produtos();
     $s->setNome($_POST['nomeprod']);
@@ -10,6 +9,7 @@ try {
     $s->setvalor($_POST['valorprod']);
     $s->setcodid($_POST['codid']);
     $s->update();
+    header('Location: ../produtos.php');
 }catch(Exception $e){
     print json_encode([
         "error" => true,
