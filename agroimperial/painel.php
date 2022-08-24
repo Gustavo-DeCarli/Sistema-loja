@@ -1,11 +1,11 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
-  echo '<script type="text/javascript">';
-  echo 'alert("Login necessário");';
-  echo 'window.location.href = "index.php";';
-  echo '</script>';
-  exit;
+    echo '<script type="text/javascript">';
+    echo 'alert("Login necessário");';
+    echo 'window.location.href = "index.php";';
+    echo '</script>';
+    exit;
 }
 ?>
 <!DOCTYPE html>
@@ -40,6 +40,19 @@ if (!isset($_SESSION['user_id'])) {
                 <h4>Produtos X Categorias</h4>
                 <h5>Produtos Cadastrados: <?php echo $prods ?> </h5>
                 <h5>Categorias Cadastradas: <?php echo $cats ?> </h5>
+                <div class='mt-3 container'>
+                    <h4>Porcentagem de aumento dos produtos</h4>
+                    <form method="POST" action='lib/porc.php'>
+                        <div class='row'>
+                            <div class="ms-2 col">
+                                <input style="width:150px;" class='form-control' type="number" name='porcentagem'>
+                            </div>
+                            <div class="ms-2 col">
+                                <input class='buscar btn' type='submit' value='Atualizar' name='envform'>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
             <div class="grafchart">
                 <h5>Mês Anterios X Mês Atual</h5>

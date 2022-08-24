@@ -10,6 +10,7 @@ class Produtos
     private $cat = "";
     private $valor = "";
     private $codid = "";
+    private $porc = "";
 
     function __toString(){
         return json_encode([
@@ -19,7 +20,8 @@ class Produtos
             "cod" => $this->cod,
             "cat" => $this->cat,
             "valor" => $this->valor,
-            "codid" => $this->codid
+            "codid" => $this->codid,
+            "porc" => $this->porc
         ]);
     }
 
@@ -30,6 +32,7 @@ class Produtos
     function setcat($v){$this->cat = $v;}
     function setvalor($v){$this->valor = $v;}
     function setcodid($v){$this->codid = $v;}
+    function setporc($v){$this->porc = $v;}
 
     function inserir()
     {
@@ -85,6 +88,26 @@ class Produtos
             die($e->getMessage());
         }
 }
+
+    function aumentar()
+    {
+        $connection = DB::getInstance();
+        try{
+            $consulta = $connection->prepare("START TRANSACTION;");
+            $consulta->execute();
+            $consulta = $connection->prepare("UPDATE produtos SET valor=valor+(valor*(:porc/100))");
+            $consulta->execute([
+                ':porc' => $this->porc
+            ]);
+            $consulta = $connection->prepare("COMMIT;");
+            $consulta->execute();
+            
+        }catch(Exception $e){
+            $consulta = $connection->prepare("ROLLBACK;");
+            $consulta->execute();
+            die($e->getMessage());
+        }
+    }
 }
 
 class Categorias
