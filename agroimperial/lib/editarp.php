@@ -7,6 +7,7 @@ try {
     $s->setcod($_POST['cod']);
     $s->setcat($_POST['catprod']);
     $s->setvalor($_POST['valorprod']);
+    $s->setvalorv($_POST['valorv']);
     $s->setcodid($_POST['codid']);
     $s->update();
     header('Location: ../produtos.php');

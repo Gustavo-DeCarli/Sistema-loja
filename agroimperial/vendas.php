@@ -152,7 +152,7 @@ if (!isset($_SESSION['user_id'])) {
     </div>
   </div>
   <script>
-    const baseUrl = `//192.168.0.29/lib/`
+    const baseUrl = `//localhost/agroimperial/lib/`
     onload = async () => {
     modal2 = new bootstrap.Modal(document.getElementById('exampleModal2'))
     btnSalvar2 = document.getElementById("salvar2")

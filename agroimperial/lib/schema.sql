@@ -8,7 +8,8 @@ CREATE TABLE produtos(
     estoque INT NOT NULL,
     cat INT NOT NULL,
     valor FLOAT NOT NULL,
-    PRIMARY KEY (id)
+    valorv FLOAT NOT NULL,
+    PRIMARY KEY (cod)
 );
 
 CREATE TABLE categorias(
@@ -25,7 +26,7 @@ CREATE TABLE vendas(
     valort FLOAT NOT NULL,
     data DATE NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (idprod) REFERENCES produtos(id)
+    FOREIGN KEY (codprod) REFERENCES produtos(cod)
 );
 
 CREATE TABLE login(

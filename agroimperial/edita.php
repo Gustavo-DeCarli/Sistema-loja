@@ -76,8 +76,12 @@ if (!isset($_POST['edit'])){
                     <input type="number" class="form-control" name='estoque' id="estoque" placeholder="Quantidade em Estoque" value='<?php echo $d['estoque']?>'>
                 </div>
                 <div class="mb-3">
-                    <label for="valorprod" class="form-label">Valor do Produto</label>
+                    <label for="valorprod" class="form-label">Preço de Custo</label>
                     <input type="number" step=0.01 class="form-control" name='valorprod' id="valorprod" placeholder="Valor do Produto" value='<?php echo $d['valor']?>'>
+                </div>
+                <div class="mb-3">
+                    <label for="valorv" class="form-label">Preço de Venda</label>
+                    <input type="number" step=0.01 class="form-control" name='valorv' id="valorv" placeholder="Valor do Produto" value='<?php echo $d['valorv']?>'>
                 </div>
                 <div class="mb-3">
                     <button class="btn btn-success p-2" ><a href='produtos.php' class='text-light text-decoration-none'>Voltar</a></button>

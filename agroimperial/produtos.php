@@ -80,7 +80,8 @@ if (!isset($_SESSION['user_id'])) {
                         <th scope="col">Produto</th>
                         <th scope="col">Categoria</th>
                         <th scope="col">Estoque</th>
-                        <th scope="col">Valor</th>
+                        <th scope="col">Preço de custo</th>
+                        <th scope="col">Preço de venda</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -100,16 +101,16 @@ if (!isset($_SESSION['user_id'])) {
                         $b2 = $_POST['busca'];
                         $b3 = $_POST['buscacat'];
                         if ($b1 != '') {
-                            $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.cod=$b1 ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
+                            $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, produtos.valorv, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.cod=$b1 ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
                         } elseif ($b2 != '') {
-                            $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.nome LIKE '%$b2%' ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
+                            $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, produtos.valorv, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.nome LIKE '%$b2%' ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
                         }elseif($b3 !=''){
-                            $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.cat='$b3' ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
+                            $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, produtos.valorv, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.cat='$b3' ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
                         } elseif ($b2 == '' & $b1 == '' & $b3=='') {
-                            $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
+                            $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, produtos.valorv, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
                         }
                     } else {
-                        $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
+                        $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, produtos.valorv, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
                     }
                     $stmt->setFetchMode(PDO::FETCH_ASSOC);
                     $dados11 = $stmt->fetchAll();
@@ -121,6 +122,7 @@ if (!isset($_SESSION['user_id'])) {
                             <td><?php echo $loja['cat'] ?></td>
                             <td><?php echo $loja['estoque'] ?></td>
                             <td>R$<?php echo $loja['valor'] ?></td>
+                            <td>R$<?php echo $loja['valorv'] ?></td>
                             <td>
                                 <form action='edita.php' method='POST'><button class="btn btn-danger p-1" name="edit" id="edit" type='submit' value="<?php echo $loja['cod'] ?>">Editar</button></form>
                             </td>
@@ -193,8 +195,12 @@ if (!isset($_SESSION['user_id'])) {
                         <input type="number" class="form-control" id="estoque" placeholder="Quantidade em Estoque">
                     </div>
                     <div class="mb-3">
-                        <label for="valorprod" class="form-label">Valor do Produto</label>
+                        <label for="valorprod" class="form-label">Preço de custo</label>
                         <input type="number" step=0.01 class="form-control" id="valorprod" placeholder="Valor do Produto">
+                    </div>
+                    <div class="mb-3">
+                        <label for="valorv" class="form-label">Preço de venda</label>
+                        <input type="number" step=0.01 class="form-control" id="valorv" placeholder="Valor do Produto">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -207,7 +213,7 @@ if (!isset($_SESSION['user_id'])) {
     </div>
 
     <script>
-        const baseUrl = `//192.168.0.29/lib/`
+        const baseUrl = `//localhost/agroimperial/lib/`
         onload = async () => {
             modal1 = new bootstrap.Modal(document.getElementById('exampleModal1'))
             btnSalvar1 = document.getElementById("salvar1")
@@ -218,6 +224,7 @@ if (!isset($_SESSION['user_id'])) {
                 const catprod = document.getElementById("catprod").value
                 const estoque = document.getElementById("estoque").value
                 const valorprod = document.getElementById("valorprod").value
+                const valorv = document.getElementById("valorv").value
 
                 const body = new FormData()
                 body.append('cod', cod)
@@ -225,6 +232,7 @@ if (!isset($_SESSION['user_id'])) {
                 body.append('catprod', catprod)
                 body.append('estoque', estoque)
                 body.append('valorprod', valorprod)
+                body.append('valorv', valorv)
 
                 const response = await fetch(`${baseUrl}addprod.php`, {
                     method: "POST",

@@ -9,6 +9,7 @@ class Produtos
     private $cod = "";
     private $cat = "";
     private $valor = "";
+    private $valorv = "";
     private $codid = "";
     private $porc = "";
 
@@ -20,6 +21,7 @@ class Produtos
             "cod" => $this->cod,
             "cat" => $this->cat,
             "valor" => $this->valor,
+            "valorv" => $this->valorv,
             "codid" => $this->codid,
             "porc" => $this->porc
         ]);
@@ -31,6 +33,7 @@ class Produtos
     function setcod($v){$this->cod = $v;}
     function setcat($v){$this->cat = $v;}
     function setvalor($v){$this->valor = $v;}
+    function setvalorv($v){$this->valorv = $v;}
     function setcodid($v){$this->codid = $v;}
     function setporc($v){$this->porc = $v;}
 
@@ -40,13 +43,14 @@ class Produtos
         try{
             $consulta = $connection->prepare("START TRANSACTION;");
             $consulta->execute();
-            $consulta = $connection->prepare("INSERT INTO produtos(nome,estoque,cod,cat,valor) VALUES(:nome,:estoque,:cod,:cat,:valor)");
+            $consulta = $connection->prepare("INSERT INTO produtos(nome,estoque,cod,cat,valor,valorv) VALUES(:nome,:estoque,:cod,:cat,:valor,:valorv)");
             $consulta->execute([
                 ':nome' => $this->nome,
                 ':estoque' => $this->estoque,
                 ':cod' => $this->cod,
                 ':cat' => $this->cat,
-                ':valor' => $this->valor
+                ':valor' => $this->valor,
+                ':valorv' => $this->valorv
             ]);
             $consulta = $connection->prepare("COMMIT;");
             $consulta->execute();
@@ -70,13 +74,14 @@ class Produtos
         try{
             $consulta = $connection->prepare("START TRANSACTION;");
             $consulta->execute();
-            $consulta = $connection->prepare("UPDATE produtos SET nome=:nome, estoque=:estoque, cod=:cod, cat=:cat, valor=:valor WHERE cod = :codid");
+            $consulta = $connection->prepare("UPDATE produtos SET nome=:nome, estoque=:estoque, cod=:cod, cat=:cat, valor=:valor, valorv=:valorv WHERE cod = :codid");
             $consulta->execute([
                 ':nome' => $this->nome,
                 ':estoque' => $this->estoque,
                 ':cod' => $this->cod,
                 ':cat' => $this->cat,
                 ':valor' => $this->valor,
+                ':valorv' => $this->valorv,
                 ':codid' => $this->codid
             ]);
             $consulta = $connection->prepare("COMMIT;");
@@ -95,7 +100,7 @@ class Produtos
         try{
             $consulta = $connection->prepare("START TRANSACTION;");
             $consulta->execute();
-            $consulta = $connection->prepare("UPDATE produtos SET valor=valor+(valor*(:porc/100))");
+            $consulta = $connection->prepare("UPDATE produtos SET valorv=valorv+(valorv*(:porc/100))");
             $consulta->execute([
                 ':porc' => $this->porc
             ]);
