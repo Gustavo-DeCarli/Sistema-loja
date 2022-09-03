@@ -7,8 +7,8 @@ CREATE TABLE produtos(
     nome VARCHAR(400) NOT NULL,
     estoque INT NOT NULL,
     cat INT NOT NULL,
-    valor FLOAT NOT NULL,
-    valorv FLOAT NOT NULL,
+    valor FLOAT(255,2) NOT NULL,
+    valorv FLOAT(255,2) NOT NULL,
     PRIMARY KEY (cod)
 );
 
@@ -23,7 +23,7 @@ CREATE TABLE vendas(
     codprod INT NOT NULL,
     notafisc VARCHAR(200) NOT NULL,
     quantidade INT NOT NULL,
-    valort FLOAT NOT NULL,
+    valort FLOAT(255,2) NOT NULL,
     data DATE NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (codprod) REFERENCES produtos(cod)
