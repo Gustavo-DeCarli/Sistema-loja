@@ -37,24 +37,24 @@ if (!isset($_SESSION['user_id'])) {
             <nav class="navbar bg-light border rounded">
                 <form action="produtos.php" method='POST' class="container-fluid justify-content-start">
                     <div class="col-auto">
-                        <button id="novo" type="button" class="botao btn " data-bs-toggle="modal" data-bs-target="#exampleModal1">
-                            Adicionar Produto
+                        <button style="width:100px;" id="novo" type="button" class="botao btn " data-bs-toggle="modal" data-bs-target="#exampleModal1">
+                            Adicionar 
                         </button>
                     </div>
                     <div class="ms-2 col-auto">
-                        <input style="width:150px;" class="form-control" name="buscacod" type="text" placeholder="Buscar código">
+                        <input style="width:125px;" class="form-control" name="buscacod" type="text" placeholder="Buscar código">
                     </div>
                     <div class="ms-2 col-auto">
                         <input class="buscar btn" name='buscar1' type="submit" value='Buscar'>
                     </div>
                     <div class="ms-2 col-auto">
-                        <input style="width:150px;" class="form-control" name="busca" type="text" placeholder="Buscar nome">
+                        <input style="width:125px;" class="form-control" name="busca" type="text" placeholder="Buscar nome">
                     </div>
                     <div class="ms-2 col-auto">
                         <input class="buscar btn" name='buscar2' type="submit" value='Buscar'>
                     </div>
                     <div class="ms-2 col-auto">
-                        <select style="width:150px;" class="form-select" name="buscacat">
+                        <select style="width:125px;" class="form-select" name="buscacat">
                             <option value="">Categoria</option>
                             <?php 
                             require 'lib/conn.php';
@@ -70,6 +70,15 @@ if (!isset($_SESSION['user_id'])) {
                     </div>
                     <div class="ms-2 col-auto">
                         <input class="buscar btn" name='buscar3' type="submit" value='Buscar'>
+                    </div>
+                    <div class="ms-2 col-auto">
+                        <input style="width:70px;" class="form-control" name="per" type="number" placeholder="De">
+                    </div>
+                    <div class="ms-2 col-auto">
+                        <input style="width:70px;" class="form-control" name="per2" type="number" placeholder="Até">
+                    </div>
+                    <div class="ms-2 col-auto">
+                        <input class="buscar btn" name='buscar5' type="submit" value='Buscar'>
                     </div>
                 </form>
             </nav>
@@ -96,18 +105,22 @@ if (!isset($_SESSION['user_id'])) {
                     $inicio = $pc - 1;
                     $inicio = $inicio * $total_reg;
                     $connection = DB::getInstance();
-                    if (isset($_POST['buscacod']) or isset($_POST['busca']) or isset($_POST['buscacat'])) {
+                    if (isset($_POST['buscacod']) or isset($_POST['busca']) or isset($_POST['buscacat']) or isset($_POST['per']) or isset($_POST['per2'])) {
                         $b1 = $_POST['buscacod'];
                         $b2 = $_POST['busca'];
                         $b3 = $_POST['buscacat'];
+                        $b4 = $_POST['per'];
+                        $b5 = $_POST['per2'];
                         if ($b1 != '') {
                             $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, produtos.valorv, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.cod=$b1 ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
                         } elseif ($b2 != '') {
                             $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, produtos.valorv, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.nome LIKE '%$b2%' ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
                         }elseif($b3 !=''){
                             $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, produtos.valorv, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.cat='$b3' ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
-                        } elseif ($b2 == '' & $b1 == '' & $b3=='') {
+                        } elseif ($b2 == '' & $b1 == '' & $b3=='' & $b4=='' & $b5=='') {
                             $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, produtos.valorv, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
+                        }elseif ($b4 != '' & $b5 != '') {
+                            $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, produtos.valorv, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.cod BETWEEN $b4 AND $b5 ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
                         }
                     } else {
                         $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, produtos.valorv, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
