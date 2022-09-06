@@ -35,10 +35,10 @@ if (!isset($_SESSION['user_id'])) {
 
 
             <nav class="navbar bg-light border rounded">
-                <form action="produtos.php" method='POST' class="container-fluid justify-content-start">
+                <form action="produtos.php" method='GET' class="container-fluid justify-content-start">
                     <div class="col-auto">
                         <button style="width:100px;" id="novo" type="button" class="botao btn " data-bs-toggle="modal" data-bs-target="#exampleModal1">
-                            Adicionar 
+                            Adicionar
                         </button>
                     </div>
                     <div class="ms-2 col-auto">
@@ -56,7 +56,7 @@ if (!isset($_SESSION['user_id'])) {
                     <div class="ms-2 col-auto">
                         <select style="width:125px;" class="form-select" name="buscacat">
                             <option value="">Categoria</option>
-                            <?php 
+                            <?php
                             require 'lib/conn.php';
                             $connection = DB::getInstance();
                             $stmt = $connection->query("SELECT * from categorias");
@@ -64,7 +64,7 @@ if (!isset($_SESSION['user_id'])) {
                             $cat = $stmt->fetchAll();
                             foreach ($cat as $cats) {
                             ?>
-                            <option value="<?php echo $cats['id']?>"><?php echo $cats['nomec']?></option>
+                                <option value="<?php echo $cats['id'] ?>"><?php echo $cats['nomec'] ?></option>
                             <?php } ?>
                         </select>
                     </div>
@@ -105,21 +105,21 @@ if (!isset($_SESSION['user_id'])) {
                     $inicio = $pc - 1;
                     $inicio = $inicio * $total_reg;
                     $connection = DB::getInstance();
-                    if (isset($_POST['buscacod']) or isset($_POST['busca']) or isset($_POST['buscacat']) or isset($_POST['per']) or isset($_POST['per2'])) {
-                        $b1 = $_POST['buscacod'];
-                        $b2 = $_POST['busca'];
-                        $b3 = $_POST['buscacat'];
-                        $b4 = $_POST['per'];
-                        $b5 = $_POST['per2'];
+                    if (isset($_GET['buscacod']) or isset($_GET['busca']) or isset($_GET['buscacat']) or isset($_GET['per']) or isset($_GET['per2'])) {
+                        $b1 = $_GET['buscacod'];
+                        $b2 = $_GET['busca'];
+                        $b3 = $_GET['buscacat'];
+                        $b4 = $_GET['per'];
+                        $b5 = $_GET['per2'];
                         if ($b1 != '') {
-                            $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, produtos.valorv, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.cod=$b1 ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
+                            $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, produtos.valorv, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.cod='$b1' ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
                         } elseif ($b2 != '') {
                             $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, produtos.valorv, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.nome LIKE '%$b2%' ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
-                        }elseif($b3 !=''){
+                        } elseif ($b3 != '') {
                             $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, produtos.valorv, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.cat='$b3' ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
-                        } elseif ($b2 == '' & $b1 == '' & $b3=='' & $b4=='' & $b5=='') {
+                        } elseif ($b2 == '' & $b1 == '' & $b3 == '' & $b4 == '' & $b5 == '') {
                             $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, produtos.valorv, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
-                        }elseif ($b4 != '' & $b5 != '') {
+                        } elseif ($b4 != '' & $b5 != '') {
                             $stmt = $connection->query("SELECT produtos.cod, produtos.nome, produtos.estoque, produtos.valor, produtos.valorv, categorias.nomec as cat from produtos, categorias where categorias.id=produtos.cat AND produtos.cod BETWEEN $b4 AND $b5 ORDER BY produtos.cod DESC LIMIT $inicio,$total_reg");
                         }
                     } else {
@@ -152,13 +152,28 @@ if (!isset($_SESSION['user_id'])) {
                         $tp = $tr / $total_reg;
                         $anterior = $pc - 1;
                         $proximo = $pc + 1;
+                        if(isset($_GET['buscacod']) or isset($_GET['buscac']) or isset($_GET['buscacat']) or isset($_GET['per']) or isset($_GET['per2'])){
+                            $buscacod = $_GET['buscacod'];
+                            $busca = $_GET['busca'];
+                            $buscacat = $_GET['buscacat'];
+                            $per = $_GET['per'];
+                            $per2 = $_GET['per2'];
+                        }
                         if ($pc > 1) {
                             echo "<td class='fot' ></td>";
                             echo "<td class='fot' ></td>";
-                            echo "<td class='fot' ><a class='btn btn-success' href='?pagina=$anterior'>Anterior</a></td>";
+                            if(isset($_GET['buscacod']) or isset($_GET['buscac']) or isset($_GET['buscacat']) or isset($_GET['per']) or isset($_GET['per2'])){
+                            echo "<td class='fot' ><a class='btn btn-success' href='?pagina=$anterior&buscacod=$buscacod&busca=$busca&buscacat=$buscacat&per=$per&per2=$per2'>Anterior</a></td>";
+                            }else{
+                                echo "<td class='fot' ><a class='btn btn-success' href='?pagina=$anterior'>Anterior</a></td>";
+                            }
                         }
                         if ($pc < $tr) {
-                            echo "<td class='fot' ><a class='btn btn-success' href='?pagina=$proximo'>Próxima</a></td>";
+                            if(isset($_GET['buscacod']) or isset($_GET['buscac']) or isset($_GET['buscacat']) or isset($_GET['per']) or isset($_GET['per2'])){
+                                echo "<td class='fot' ><a class='btn btn-success' href='?pagina=$proximo&buscacod=$buscacod&busca=$busca&buscacat=$buscacat&per=$per&per2=$per2'>Próxima</a></td>";
+                            }else{
+                                echo "<td class='fot' ><a class='btn btn-success' href='?pagina=$proximo'>Próxima</a></td>";   
+                            }
                         }
                         ?>
                     <tr>
